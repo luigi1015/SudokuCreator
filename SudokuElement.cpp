@@ -1,7 +1,9 @@
 #include <stdexcept>
+#include "SudokuElement.h"
 
 namespace Sudoku
 {
+	/*
 	class SudokuElement
 	{//A single element/number of the Sudoku puzzle.
 		private:
@@ -19,6 +21,7 @@ namespace Sudoku
 			void clear();//Clears the possibilities and the value.
 			void clearValue();//Clears only the value.
 	};
+	*/
 	
 	SudokuElement::SudokuElement()
 	{//Sets the possibilities to all true and value to 0.
@@ -123,12 +126,4 @@ namespace Sudoku
 	{//Clears only the value.
 		elementValue = 0;//Sets value to initial invalid number.
 	}
-	
-	class SudokuPuzzle
-	{//A whole Sudoku puzzle
-		private:
-			SudokuElement elements[9][9];
-			
-		public:
-	};
 }
