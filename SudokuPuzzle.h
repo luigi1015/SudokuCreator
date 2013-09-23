@@ -1,6 +1,8 @@
 #ifndef SudokuPuzzle_h
 #define SudokuPuzzle_h
 
+#include "SudokuElement.h"
+
 namespace Sudoku
 {	
 	class SudokuPuzzle
