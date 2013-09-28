@@ -13,7 +13,7 @@ int main( )
 		return 0;
 	}
 	else
-	{//Runner gailed.
+	{//Runner failed.
 		return 1;
 	}
 }
