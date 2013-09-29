@@ -82,6 +82,17 @@ namespace Sudoku
 		
 		return numPossibilities;
 	}
+
+	bool SudokuElement::isPossibleValue( int val )
+	{//Returns true if, according to it's records, the element can be set to value val. val should be between 1 and 9 inclusive.
+		if( (value < 1) || (value > 9) )
+		{//Value is out of range, throw an exception.
+			throw std::out_of_range( "In SudokuElement::isPossibleValue( int val ), value parameter is out of range." );
+		}
+		else
+		{
+			return possibilities[val-1];
+	}
 	
 	void SudokuElement::setValue( int newValue )
 	{//Sets the number of the element. Num should be between 1 and 9 inclusive. Generates an exception if num is impossible according to what the element has been told or if num is out of range.( int value )

@@ -7,7 +7,7 @@ SudokuPuzzle.o: SudokuPuzzle.cpp SudokuPuzzle.h
 	g++ -Wall -c SudokuPuzzle.cpp SudokuPuzzle.h
 
 Test: SudokuElement.o SudokuCreatorTest.cpp SudokuElementTest.h
-	g++ -Wall -o Test SudokuCreatorTest.cpp SudokuElementTest.h SudokuElement.o -lcppunit
+	g++ -Wall -o Test SudokuCreatorTest.cpp SudokuElementTest.h SudokuPuzzle.o SudokuElement.o -lcppunit
 
 clean:
 	rm Test *.o *~ *.gch
