@@ -23,13 +23,13 @@ namespace Sudoku
 			throw std::out_of_range( "In SudokuPuzzle::removePossibilityFromGrid( int xGrid, int yGrid, int val ), xGrid is out of range. xGrid should be between 0 and 2 inclusive." );
 		}
 		else
-		{//xGrid is in range, condinue checking.
+		{//xGrid is in range, continue checking.
 			if( (yGrid < 0) || (xGrid > 2) )
 			{//yGrid is out of range, throw an exception.
 				throw std::out_of_range( "In SudokuPuzzle::removePossibilityFromGrid( int xGrid, int yGrid, int val ), yGrid is out of range. yGrid should be between 0 and 2 inclusive." );
 			}
 			else
-			{//yGrid is in range, condinue checking.
+			{//yGrid is in range, continue checking.
 				if( (val < 1) || (val > 9) )
 				{//val is out of range, throw an exception.
 					throw std::out_of_range( "In SudokuPuzzle::removePossibilityFromGrid( int xGrid, int yGrid, int val ), val is out of range. val should be between 1 and 9 inclusive." );
@@ -43,7 +43,7 @@ namespace Sudoku
 					{//Go through the x coords.
 						for( int j = 0; j < 3; j++ )
 						{//Go through the y coords.
-							elements[i][j].setImpossible( val );
+							elements[i*3+x][j*3+y].setImpossible( val );
 						}
 					}
 				}
@@ -58,13 +58,13 @@ namespace Sudoku
 			throw std::out_of_range( "In SudokuPuzzle::addPossibilityFromGrid( int xGrid, int yGrid, int val ), xGrid is out of range. xGrid should be between 0 and 2 inclusive." );
 		}
 		else
-		{//xGrid is in range, condinue checking.
+		{//xGrid is in range, continue checking.
 			if( (yGrid < 0) || (xGrid > 2) )
 			{//yGrid is out of range, throw an exception.
 				throw std::out_of_range( "In SudokuPuzzle::addPossibilityFromGrid( int xGrid, int yGrid, int val ), yGrid is out of range. yGrid should be between 0 and 2 inclusive." );
 			}
 			else
-			{//yGrid is in range, condinue checking.
+			{//yGrid is in range, continue checking.
 				if( (val < 1) || (val > 9) )
 				{//val is out of range, throw an exception.
 					throw std::out_of_range( "In SudokuPuzzle::addPossibilityFromGrid( int xGrid, int yGrid, int val ), val is out of range. val should be between 1 and 9 inclusive." );
@@ -78,7 +78,7 @@ namespace Sudoku
 					{//Go through the x coords.
 						for( int j = 0; j < 3; j++ )
 						{//Go through the y coords.
-							elements[i][j].setPossible( val );
+							elements[i*3+x][j*3+y].setPossible( val );
 						}
 					}
 				}
@@ -199,7 +199,7 @@ namespace Sudoku
 					elements[x][y].setValue( val );
 					removePossibilityFromCol( y, val );
 					removePossibilityFromRow( x, val );
-					removePossibilityFromGrid( getGridByCoord(x), getGridByCoord(y), val )
+					removePossibilityFromGrid( getGridByCoord(x), getGridByCoord(y), val );
 				}
 			}
 		}
@@ -229,18 +229,19 @@ namespace Sudoku
 				}
 			}
 		}
+	}
 
 	std::vector<int> SudokuPuzzle::getPossibleValues( int x, int y )
 	{//Returns a vector of the the possible values.
-		if( (y < 1) || (y > 9) )
+		if( (x < 1) || (x > 9) )
 		{//y is out of range, throw an exception.
-			throw std::out_of_range( "In SudokuPuzzle::getPossibleValues( int y, int val ), y is out of range. y should be between 1 and 9 inclusive." );
+			throw std::out_of_range( "In SudokuPuzzle::getPossibleValues( int y, int val ), y is out of range. x should be between 1 and 9 inclusive." );
 		}
 		else
 		{//y is in range, continue checking.
-			if( (val < 1) || (val > 9) )
+			if( (y < 1) || (y > 9) )
 			{//val is out of range, throw an exception.
-				throw std::out_of_range( "In SudokuPuzzle::getPossibleValues( int y, int val ), val is out of range. val should be between 1 and 9 inclusive." );
+				throw std::out_of_range( "In SudokuPuzzle::getPossibleValues( int y, int val ), y is out of range. val should be between 1 and 9 inclusive." );
 			}
 			else
 			{//val is in range, return the value.
@@ -249,7 +250,7 @@ namespace Sudoku
 		}
 	}
 
-	int getElementValue( int x, int y )
+	int SudokuPuzzle::getElementValue( int x, int y )
 	{//Returns the value of the element at coordinates x and y.
 		if( (x < 1) || (x > 9) )
 		{//x is out of range, throw an exception.
