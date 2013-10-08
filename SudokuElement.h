@@ -1,6 +1,8 @@
 #ifndef SudokuElement_h
 #define SudokuElement_h
 
+#include <vector>
+
 namespace Sudoku
 {
 	class SudokuElement
@@ -15,6 +17,7 @@ namespace Sudoku
 			void setImpossible( int value );//Sets value to be impossible. Value should be between 1 and 9 inclusive. Generates an exception if value is out of range.
 			int getNumPossibilities();//Returns the number of possiblities according to what the element has been told.
 			bool isPossibleValue( int val );//Returns true if, according to it's records, the element can be set to value val. val should be between 1 and 9 inclusive.
+			std::vector<int> possibleVals();//Return the list of possible values according to the element's records.
 			void setValue( int num );//Sets the number of the element. Num should be between 1 and 9 inclusive. Generates an exception if num is impossible according to what the element has been told or if num is out of range.
 			int getValue();//Returns the number of the element. Generates an exception if value has not been set.
 			bool isSet();//Returns if the element has been set.

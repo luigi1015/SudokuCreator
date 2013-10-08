@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <vector>
 #include "SudokuElement.h"
 
 namespace Sudoku
@@ -136,5 +137,19 @@ namespace Sudoku
 	void SudokuElement::clearValue()
 	{//Clears only the value.
 		elementValue = 0;//Sets value to initial invalid number.
+	}
+
+	std::vector<int> SudokuElement::possibleVals()
+	{//Return the list of possible values according to the element's records.
+		std::vector<int> values;
+		for( int i = 0; i < 9; i++ )
+		{//Go through the values and, if they're true, add them to the vector.
+			if( possibilities[i] == true )
+			{
+				values.push_back( i+1 );
+			}
+		}
+
+		return values;
 	}
 }
