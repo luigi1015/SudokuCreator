@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <iostream>
 #include <vector>
 #include "SudokuPuzzle.h"
 
@@ -299,5 +300,27 @@ namespace Sudoku
 				}
 			}
 		}
+	}
+
+	std::ostream& operator<<( std::ostream &out, SudokuPuzzle &puzzle )
+	{//Stream overloading to work with cout.
+		for( int i = 1; i <= 9; i++ )
+		{//Go through the rows.
+			for( int j = 1; j <= 9; j++ )
+			{//Go through the elements in the row.
+				out << puzzle.getElementValue( i, j );
+
+				if( j <= 8 )
+				{//If this element isn't the last in the row, add a space for the next element in the row.
+					out << " ";
+				}
+			}
+
+			out << "\n";
+		}
+
+		std::cout << "Test 1\n";
+
+		return out;
 	}
 }

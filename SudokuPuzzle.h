@@ -2,6 +2,7 @@
 #define SudokuPuzzle_h
 
 #include <vector>
+#include <ostream>
 #include "SudokuElement.h"
 
 namespace Sudoku
@@ -25,6 +26,7 @@ namespace Sudoku
 			int getElementValue( int x, int y );//Returns the value of the element at coordinates x and y.
 			bool isPossibleValue( int x, int y, int val );//Returns true if, according to it's records, the element at (x,y) can be set to value val. val, x, and y all should be between 1 and 9 inclusive.
 			std::vector<int> getPossibleValues( int x, int y );//Returns a vector of the possible values.
+			friend std::ostream& operator<<( std::ostream &out, SudokuPuzzle &puzzle );//Stream overloading to work with cout.
 	};
 }
 
