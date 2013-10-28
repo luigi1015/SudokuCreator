@@ -103,7 +103,7 @@ namespace Sudoku
 			{//val is in range, remove possibility.
 				for( int j = 0; j < 9; j++ )
 				{//Go through the elements in the row.
-					elements[x][j].setImpossible( val );
+					elements[x-1][j].setImpossible( val );
 				}
 			}
 		}
@@ -125,7 +125,7 @@ namespace Sudoku
 			{//val is in range, add possibility.
 				for( int j = 0; j < 9; j++ )
 				{//Go through the elements in the row.
-					elements[x][j].setPossible( val );
+					elements[x-1][j].setPossible( val );
 				}
 			}
 		}
@@ -147,7 +147,7 @@ namespace Sudoku
 			{//val is in range, remove possibility.
 				for( int i = 0; i < 9; i++ )
 				{//Go through the elements in the row.
-					elements[i][y].setImpossible( val );
+					elements[i][y-1].setImpossible( val );
 				}
 			}
 		}
@@ -169,7 +169,7 @@ namespace Sudoku
 			{//val is in range, remove possibility.
 				for( int i = 0; i < 9; i++ )
 				{//Go through the elements in the row.
-					elements[i][y].setPossible( val );
+					elements[i][y-1].setPossible( val );
 				}
 			}
 		}
@@ -197,10 +197,17 @@ namespace Sudoku
 				}
 				else
 				{//val is in range, set value.
-					elements[x][y].setValue( val );
-					removePossibilityFromCol( y, val );
-					removePossibilityFromRow( x, val );
-					removePossibilityFromGrid( getGridByCoord(x), getGridByCoord(y), val );
+					if( !(isPossibleValue(x,y,val)) )
+					{//If the value isn't possible according to the records, throw an exception.
+						throw std::out_of_range( "In SudokuPuzzle::setElementValue( int x, int y, int val ), val is out of the range of possible values according to the records." );
+					}
+					else
+					{//The element can be set to val, set value.
+						elements[x-1][y-1].setValue( val );
+						removePossibilityFromCol( y, val );
+						removePossibilityFromRow( x, val );
+						removePossibilityFromGrid( getGridByCoord(x), getGridByCoord(y), val );
+					}
 				}
 			}
 		}
@@ -222,8 +229,8 @@ namespace Sudoku
 			}
 			else
 			{//y is in range, remove value.
-				val = elements[x][y].getValue();
-				elements[x][y].clear();
+				val = elements[x-1][y-1].getValue();
+				elements[x-1][y-1].clear();
 				addPossibilityToCol( y, val );
 				addPossibilityToRow( x, val );
 				addPossibilityToGrid( getGridByCoord(x), getGridByCoord(y), val );
@@ -251,7 +258,7 @@ namespace Sudoku
 				}
 				else
 				{//val is in range, return value.
-					return elements[x][y].isPossibleValue( val );
+					return elements[x-1][y-1].isPossibleValue( val );
 				}
 			}
 		}
@@ -271,7 +278,26 @@ namespace Sudoku
 			}
 			else
 			{//val is in range, return the value.
-				return elements[x][y].possibleVals();
+				return elements[x-1][y-1].possibleVals();
+			}
+		}
+	}
+
+	int SudokuPuzzle::getNumValues( int x, int y )
+	{//Returns a vector of the the possible values.
+		if( (x < 1) || (x > 9) )
+		{//y is out of range, throw an exception.
+			throw std::out_of_range( "In SudokuPuzzle::getPossibleValues( int y, int val ), y is out of range. x should be between 1 and 9 inclusive." );
+		}
+		else
+		{//y is in range, continue checking.
+			if( (y < 1) || (y > 9) )
+			{//val is out of range, throw an exception.
+				throw std::out_of_range( "In SudokuPuzzle::getPossibleValues( int y, int val ), y is out of range. val should be between 1 and 9 inclusive." );
+			}
+			else
+			{//val is in range, return the value.
+				return elements[x-1][y-1].getNumPossibilities();;
 			}
 		}
 	}
@@ -290,13 +316,13 @@ namespace Sudoku
 			}
 			else
 			{//y is in range, check if the element is set.
-				if( elements[x][y].getValue() == 0 )
+				if( !(elements[x-1][y-1].isSet()) )
 				{//The element isn't set, throw an exception.
 					throw "In SudokuPuzzle::getElementValue( int x, int y ), the element at x,y isn't set.";
 				}
 				else
 				{
-					return elements[x][y].getValue();
+					return elements[x-1][y-1].getValue();
 				}
 			}
 		}
@@ -308,7 +334,14 @@ namespace Sudoku
 		{//Go through the rows.
 			for( int j = 1; j <= 9; j++ )
 			{//Go through the elements in the row.
-				out << puzzle.getElementValue( i, j );
+				if( puzzle.elements[j-1][i-1].isSet() )
+				{//Since the element is set, output the value.
+					out << puzzle.getElementValue( j, i );
+				}
+				else
+				{//Since the element isn't set, output the value.
+					out << "x";
+				}
 
 				if( j <= 8 )
 				{//If this element isn't the last in the row, add a space for the next element in the row.
@@ -322,5 +355,40 @@ namespace Sudoku
 		std::cout << "Test 1\n";
 
 		return out;
+	}
+
+	bool SudokuPuzzle::isSolved()
+	{//Returns whether the puzzle is solved.
+		for( int i = 0; i < 9; i++ )
+		{//Go through the rows.
+			for( int j = 0; j < 9; j++ )
+			{//Go through the elements in the row.
+				if( !(elements[i][j].isSet()) )
+				{//If this element isn't set, the puzzle isn't solved.
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+	
+	SudokuElement SudokuPuzzle::at( int x, int y )
+	{//Returns the element at coordinates x and y.
+		if( (x < 1) || (x > 9) )
+		{//x is out of range, throw an exception.
+			throw std::out_of_range( "In SudokuPuzzle::getElementValue( int x, int y ), x is out of range. x should be between 1 and 9 inclusive." );
+		}
+		else
+		{//x is in range, continue checking.
+			if( (y < 1) || (y > 9) )
+			{//y is out of range, throw an exception.
+				throw std::out_of_range( "In SudokuPuzzle::getElementValue( int x, int y ), y is out of range. y should be between 1 and 9 inclusive." );
+			}
+			else
+			{//y is in range, check if the element is set.
+				return elements[y-1][x-1];
+			}
+		}
 	}
 }

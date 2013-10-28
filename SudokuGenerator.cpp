@@ -8,6 +8,8 @@
 //#include <sstream>
 #include <stack>
 #include <stdlib.h> 
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
 
 namespace Sudoku
 {
@@ -47,8 +49,8 @@ namespace Sudoku
 	{//Create all the puzzles it can and saves them to file filename.
 		SudokuPuzzle puzzle;
 		
-		//puzzleGenerator( puzzle, 1, 1, filename);
-		puzzleGeneratorNR( filename, max );
+		puzzleGenerator( puzzle, 1, 1, filename);
+		//puzzleGeneratorNR( filename, max );
 	}
 	
 	void SudokuGenerator::puzzleGenerator( SudokuPuzzle &puzzle, int x, int y, std::string &filename)
@@ -102,7 +104,8 @@ namespace Sudoku
 	{//Non-recursively generates Sudoku puzzles. filename is the file to hold the puzzles. limit is the max amout of puzzles to create.
 		//std::vector<int> possibleValues;//Possible values for an element.
 		//std::stack< std::vector<int> > pValues;//A stack to hold the previous possible values.
-		std::vector<int> usedValues[9][9];
+		//std::vector<int> usedValues[9][9];
+		boost::numeric::ublas::matrix< std::vector<int> > usedValues(9, 9);//Create a 9x9 matrix of vectors filled with the used values as ints.
 		std::vector<int> pValues;
 		SudokuPuzzle puzzle;//The sudoku puzzle.
 		int x = 1;
@@ -112,10 +115,13 @@ namespace Sudoku
 		while( !((x == 9) && (y == 9)) && (numPuzzles < limit) )
 		{
 			pValues = puzzle.getPossibleValues( x, y );
-			if( pValues.size() > usedValues[x-1][y-1].size() )
+			//if( pValues.size() > usedValues[x-1][y-1].size() )
+			if( pValues.size() > usedValues(x-1, y-1).size() )
 			{//If haven't used all the possible values, use the next one and move on.
-				puzzle.setElementValue( x, y, pValues.at( usedValues[x-1][y-1].size() ) );
-				usedValues[x-1][y-1].push_back( puzzle.getElementValue( x, y ) );
+				//puzzle.setElementValue( x, y, pValues.at( usedValues[x-1][y-1].size() ) );
+				puzzle.setElementValue( x, y, pValues.at( usedValues(x-1, y-1).size() ) );
+				//usedValues[x-1][y-1].push_back( puzzle.getElementValue( x, y ) );
+				usedValues(x-1, y-1).push_back( puzzle.getElementValue( x, y ) );
 				if( (x == 9) && (y == 9) )
 				{//This is the last element, save the puzzle.
 					savePuzzleToFile( puzzle, filename );
@@ -135,7 +141,8 @@ namespace Sudoku
 			}
 			else
 			{//Used up all the possible values for this element. Go back to the last element and start using the remaining possible values.
-				usedValues[x-1][y-1].clear();
+				//usedValues[x-1][y-1].clear();
+				usedValues(x-1, y-1).clear();
 				
 				if( (x == 1) && (y == 1) )
 				{//This is the first element, should mean all possible Sudoku puzzles have been explored. Exit the method.
