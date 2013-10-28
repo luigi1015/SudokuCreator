@@ -29,7 +29,7 @@ namespace Sudoku
 			int getNumValues( int x, int y );//Returns the number of the possible values at element (x, y).
 			friend std::ostream& operator<<( std::ostream &out, SudokuPuzzle &puzzle );//Stream overloading to work with cout.
 			bool isSolved();//Returns whether the puzzle is solved.
-			SudokuElement at( int x, int y );//Returns the element at coordinates x and y.
+			SudokuElement& at( int x, int y );//Returns the element at coordinates x and y.
 	};
 }
 

@@ -61,10 +61,10 @@ namespace Sudoku
 			{//Go through the rows.
 				for( int j = 1; j <= 9; j++ )
 				{//Go through the elements in the row.
-					if( puzzle.getNumValues(i,j) == 1 )
+					if( !(puzzle.at(j, i).isSet()) && puzzle.getNumValues(j,i) == 1 )
 					{//There is only one possible value for element (i,j), set it to that value.
-						std::cout << "Setting element (" << j << "," << i << ") to " << puzzle.getPossibleValues(i,j).at(0) << std::endl << puzzle << std::endl << std::endl;
-						puzzle.setElementValue( i, j, puzzle.getPossibleValues(i,j).at(0) );
+						std::cout << "Setting element (" << j << "," << i << ") to " << puzzle.getPossibleValues(j,i).at(0) << std::endl /*<< puzzle << std::endl*/ << std::endl;
+						puzzle.setElementValue( j, i, puzzle.getPossibleValues(j,i).at(0) );
 						numSet++;
 					}
 				}
@@ -86,6 +86,7 @@ namespace Sudoku
 
 int main( int argc, char* argv[])
 {
+/*
 	if( (argc < 2) || (argc > 3) )
 	{//Didn't include the right arguments, error out.
 		std::cerr << "Usage: " << argv[0] << " filename [maxPuzzles]\n";
@@ -94,9 +95,9 @@ int main( int argc, char* argv[])
 	}
 	else
 	{//Start the sudokuGenerator.
+*/
 		Sudoku::SudokuPuzzle puz;
 		Sudoku::SudokuSolver sol;
-
 /*
 		puz.setElementValue( 1, 1, 8 );
 		puz.setElementValue( 1, 2, 4 );
@@ -221,5 +222,7 @@ int main( int argc, char* argv[])
 		sol.solvePuzzle( puz );
 
 		return 0;
+/*
 	}
+*/
 }

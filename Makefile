@@ -1,4 +1,4 @@
-all: SudokuElement.o SudokuGenerator.o SudokuPuzzle.o SudokuCreator SudokuSolver
+all: SudokuElement.o SudokuGenerator.o SudokuPuzzle.o SudokuSolver
 
 SudokuElement.o: SudokuElement.cpp SudokuElement.h
 #	g++ -g -Wall -c SudokuElement.cpp SudokuElement.h
@@ -30,4 +30,4 @@ SudokuSolver: SudokuElement.o SudokuPuzzle.o SudokuSolver.o
 	g++ -g -Wall -o SudokuSolver SudokuSolver.o SudokuPuzzle.o SudokuElement.o
 
 clean:
-	rm Test SudokuCreator *.o *~ *.gch
+	rm Test Test2 SudokuCreator SudokuSolver *.o *~ *.gch
