@@ -63,7 +63,7 @@ namespace Sudoku
 				{//Go through the elements in the row.
 					if( !(puzzle.at(j, i).isSet()) && puzzle.getNumValues(j,i) == 1 )
 					{//There is only one possible value for element (i,j), set it to that value.
-						std::cout << "Setting element (" << j << "," << i << ") to " << puzzle.getPossibleValues(j,i).at(0) << std::endl /*<< puzzle << std::endl*/ << std::endl;
+						//std::cout << "Setting element (" << j << "," << i << ") to " << puzzle.getPossibleValues(j,i).at(0) << std::endl /*<< puzzle << std::endl*/ << std::endl;
 						puzzle.setElementValue( j, i, puzzle.getPossibleValues(j,i).at(0) );
 						numSet++;
 					}
@@ -86,16 +86,14 @@ namespace Sudoku
 
 int main( int argc, char* argv[])
 {
-/*
-	if( (argc < 2) || (argc > 3) )
+	if( argc > 2 )
 	{//Didn't include the right arguments, error out.
-		std::cerr << "Usage: " << argv[0] << " filename [maxPuzzles]\n";
-		std::cerr << "Where maxPuzzles is the maximum number of puzzles you want the program to generate.\n";
+		std::cerr << "Usage: " << argv[0] << " [filename]\n";
+		std::cerr << "Where filename is the name of the file to save the puzzle.\n";
 		return 1;
 	}
 	else
 	{//Start the sudokuGenerator.
-*/
 		Sudoku::SudokuPuzzle puz;
 		Sudoku::SudokuSolver sol;
 /*
@@ -216,13 +214,27 @@ int main( int argc, char* argv[])
 		puz.setElementValue( 6, 9, 9 );
 		puz.setElementValue( 8, 9, 6 );
 		puz.setElementValue( 9, 9, 8 );
-		
-		std::cout << puz;
+
+		std::cout << puz << std::endl;
 
 		sol.solvePuzzle( puz );
 
+		std::cout << std::endl;
+
+		if( puz.isValid() )
+		{
+			std::cout << "It's valid!" << std::endl;
+		}
+		else
+		{
+			std::cout << "It's not valid!" << std::endl;
+		}
+
+		if( argc == 2 )
+		{//There is a second argument to the program indicating to save the puzzle to file, so save it.
+			puz.saveToFile( argv[1] );
+		}
+
 		return 0;
-/*
 	}
-*/
 }

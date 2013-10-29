@@ -92,7 +92,7 @@ namespace Sudoku
 	{//Returns the number of the element. Generates an exception if value has not been set.
 		if( !(isSet()) )
 		{//If the element isn't set, throw exception.
-			throw "In SudokuElement::getValue(), element isn't set.";
+			throw std::runtime_error( "In SudokuElement::getValue(), element isn't set." );
 		}
 		else
 		{

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <ostream>
+#include <string>
 #include "SudokuElement.h"
 
 namespace Sudoku
@@ -29,7 +30,10 @@ namespace Sudoku
 			int getNumValues( int x, int y );//Returns the number of the possible values at element (x, y).
 			friend std::ostream& operator<<( std::ostream &out, SudokuPuzzle &puzzle );//Stream overloading to work with cout.
 			bool isSolved();//Returns whether the puzzle is solved.
+			bool isValid();//Returns whether the puzzle is valid.
 			SudokuElement& at( int x, int y );//Returns the element at coordinates x and y.
+			std::string toString();//Return a string version of the puzzle meant for displaying as text or saving to a text file.
+			void saveToFile( std::string filename );//Appends the output of toString() to a file indicated by filename.
 	};
 }
 

@@ -1,6 +1,8 @@
 #include <stdexcept>
 #include <iostream>
 #include <vector>
+#include <fstream>
+#include <sstream>
 #include "SudokuPuzzle.h"
 
 namespace Sudoku
@@ -203,6 +205,7 @@ namespace Sudoku
 				{//val is in range, set value.
 					if( !(isPossibleValue(x,y,val)) )
 					{//If the value isn't possible according to the records, throw an exception.
+						//std::cerr << toString();
 						throw std::out_of_range( "In SudokuPuzzle::setElementValue( int x, int y, int val ), val is out of the range of possible values according to the records." );
 					}
 					else
@@ -234,19 +237,24 @@ namespace Sudoku
 			}
 			else
 			{//y is in range, remove value.
-				//val = elements[x-1][y-1].getValue();
-				//elements[x-1][y-1].clear();
-				val = at(x, y).getValue();
-				at(x, y).clear();
-				addPossibilityToCol( y, val );
-				addPossibilityToRow( x, val );
-				addPossibilityToGrid( getGridByCoord(x), getGridByCoord(y), val );
+				if( at(x,y).isSet() )
+				{
+					//val = elements[x-1][y-1].getValue();
+					//elements[x-1][y-1].clear();
+					val = at(x, y).getValue();
+					//at(x, y).clear();
+					at(x, y).clearValue();
+					addPossibilityToCol( y, val );
+					addPossibilityToRow( x, val );
+					addPossibilityToGrid( getGridByCoord(x), getGridByCoord(y), val );
+				}
 			}
 		}
 	}
 
 	bool SudokuPuzzle::isPossibleValue( int x, int y, int val )
 	{//Returns true if, according to it's records, the element at (x,y) can be set to value val. val, x, and y all should be between 1 and 9 inclusive.
+/*
 		if( (x < 1) || (x > 9) )
 		{//x is out of range, throw an exception.
 			throw std::out_of_range( "In SudokuPuzzle::setElementValue( int x, int y, int val ), x is out of range. x should be between 1 and 9 inclusive." );
@@ -270,10 +278,63 @@ namespace Sudoku
 				}
 			}
 		}
+*/
+		
+		if( (x < 1) || (x > 9) )
+		{//x is out of range, throw an exception.
+			throw std::out_of_range( "In SudokuPuzzle::setElementValue( int x, int y, int val ), x is out of range. x should be between 1 and 9 inclusive." );
+		}
+		else
+		{//x is in range, continue checking.
+			if( (y < 1) || (y > 9) )
+			{//y is out of range, throw an exception.
+				throw std::out_of_range( "In SudokuPuzzle::setElementValue( int x, int y, int val ), y is out of range. y should be between 1 and 9 inclusive." );
+			}
+			else
+			{//y is in range, continue checking.
+				if( (val < 1) || (val > 9) )
+				{//val is out of range, throw an exception.
+					throw std::out_of_range( "In SudokuPuzzle::setElementValue( int x, int y, int val ), val is out of range. val should be between 1 and 9 inclusive." );
+				}
+				else
+				{//val is in range, return value.
+					for( int i = 1; i <= 9; i++ )
+					{//Go through the row to check if value is there.
+						if( (x != i) && (at(i, y).isSet()) && (at(i, y).getValue() == val) )
+						{//Found another value, making val invalid.
+							return false;
+						}
+					}
+
+					for( int j = 1; j <= 9; j++ )
+					{//Go through the column to check if value is there.
+						if( (y != j) && (at(x, j).isSet()) && (at(x, j).getValue() == val) )
+						{//Found another value, making val invalid.
+							return false;
+						}
+					}
+
+					for( int i = getGridByCoord(x)*3+1; i <= getGridByCoord(x)*3+3; i++ )
+					{//Go through the grid to check if value is there.
+						for( int j = getGridByCoord(y)*3+1; j <= getGridByCoord(y)*3+3; j++ )
+						{
+							if( !((x == i) && (y == j)) && (at(i, j).isSet()) && (at(i, j).getValue() == val) )
+							{//Found another value, making val invalid.
+								return false;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		//Passed all the tests, it's possible.
+		return true;
 	}
 
 	std::vector<int> SudokuPuzzle::getPossibleValues( int x, int y )
 	{//Returns a vector of the the possible values.
+/*
 		if( (x < 1) || (x > 9) )
 		{//y is out of range, throw an exception.
 			throw std::out_of_range( "In SudokuPuzzle::getPossibleValues( int y, int val ), y is out of range. x should be between 1 and 9 inclusive." );
@@ -290,10 +351,37 @@ namespace Sudoku
 				return at(x, y).possibleVals();
 			}
 		}
+*/
+		std::vector<int> vals;
+
+		if( (x < 1) || (x > 9) )
+		{//y is out of range, throw an exception.
+			throw std::out_of_range( "In SudokuPuzzle::getPossibleValues( int y, int val ), y is out of range. x should be between 1 and 9 inclusive." );
+		}
+		else
+		{//y is in range, continue checking.
+			if( (y < 1) || (y > 9) )
+			{//val is out of range, throw an exception.
+				throw std::out_of_range( "In SudokuPuzzle::getPossibleValues( int y, int val ), y is out of range. val should be between 1 and 9 inclusive." );
+			}
+			else
+			{//val is in range, return the value.
+				for( int i = 1; i <= 9; i++ )
+				{//Go through all the values and test them. If they test ok, put them in the vector for return.
+					if( isPossibleValue(x,y,i) )
+					{
+						vals.push_back( i );
+					}
+				}
+			}
+		}
+
+		return vals;
 	}
 
 	int SudokuPuzzle::getNumValues( int x, int y )
 	{//Returns a vector of the the possible values.
+/*
 		if( (x < 1) || (x > 9) )
 		{//y is out of range, throw an exception.
 			throw std::out_of_range( "In SudokuPuzzle::getPossibleValues( int y, int val ), y is out of range. x should be between 1 and 9 inclusive." );
@@ -308,6 +396,22 @@ namespace Sudoku
 			{//val is in range, return the value.
 				//return elements[x-1][y-1].getNumPossibilities();
 				return at(x, y).getNumPossibilities();
+			}
+		}
+*/
+		if( (x < 1) || (x > 9) )
+		{//y is out of range, throw an exception.
+			throw std::out_of_range( "In SudokuPuzzle::getPossibleValues( int y, int val ), y is out of range. x should be between 1 and 9 inclusive." );
+		}
+		else
+		{//y is in range, continue checking.
+			if( (y < 1) || (y > 9) )
+			{//val is out of range, throw an exception.
+				throw std::out_of_range( "In SudokuPuzzle::getPossibleValues( int y, int val ), y is out of range. val should be between 1 and 9 inclusive." );
+			}
+			else
+			{//val is in range, return the value.
+				return getPossibleValues(x,y).size();
 			}
 		}
 	}
@@ -342,6 +446,7 @@ namespace Sudoku
 
 	std::ostream& operator<<( std::ostream &out, SudokuPuzzle &puzzle )
 	{//Stream overloading to work with cout.
+		/*
 		for( int i = 1; i <= 9; i++ )
 		{//Go through the rows.
 			for( int j = 1; j <= 9; j++ )
@@ -364,6 +469,10 @@ namespace Sudoku
 
 			out << "\n";
 		}
+		*/
+		std::string printVersion;
+
+		out << puzzle.toString();
 
 		return out;
 	}
@@ -402,5 +511,149 @@ namespace Sudoku
 				return elements[y-1][x-1];
 			}
 		}
+	}
+
+	std::string SudokuPuzzle::toString()
+	{//Return a string version of the puzzle meant for displaying as text or saving to a text file.
+		std::stringstream printVersion;
+
+		for( int i = 1; i <= 9; i++ )
+		{//Go through the rows.
+			for( int j = 1; j <= 9; j++ )
+			{//Go through the elements in the row.
+				//if( puzzle.elements[j-1][i-1].isSet() )
+				if( at(j, i).isSet() )
+				{//Since the element is set, output the value.
+					printVersion << getElementValue( j, i );
+				}
+				else
+				{//Since the element isn't set, output the value.
+					printVersion << "x";
+				}
+
+				if( j%3 == 0 )
+				{//If this element is at the edge of a grid, print a delimiter.
+					printVersion << "| ";
+				}
+
+				if( j <= 8 )
+				{//If this element isn't the last in the row, add a space for the next element in the row.
+					printVersion << " ";
+				}
+			}
+
+			if( i%3 == 0 )
+			{//If this element is at the edge of a grid, print a delimiter line.
+				printVersion << "\n----------------------";
+			}
+
+			printVersion << "\n";
+		}
+
+		return printVersion.str();
+	}
+	
+	void SudokuPuzzle::saveToFile( std::string filename )
+	{//Appends the output of toString() to a file indicated by filename.
+		std::ofstream saveFile;
+		std::string errorText;
+		std::string printVersion;
+
+		try
+		{
+			saveFile.open( filename.c_str(), std::ios::out | std::ios::app );//Open the file for output and appending to the end of the file.
+			saveFile << toString();
+			saveFile << "================================\n";//To indicate the end of the puzzle.
+			saveFile.close();
+		}
+		catch( std::exception e )
+		{
+			errorText = "In SudokuPuzzle::saveToFile( std::string filename ), got an error trying to save to file ";
+			errorText += filename;
+			errorText += " : ";
+			errorText += e.what();
+			std::cerr << errorText;
+		}
+	}
+
+	bool SudokuPuzzle::isValid()
+	{//Returns whether the puzzle is valid.
+		bool values[9];
+
+		for( int k = 0; k < 9; k++ )
+		{//Go through and make sure each value is set to false.
+			values[k] = false;
+		}
+
+		//Go through each row.
+		for( int i = 1; i <= 9; i++ )
+		{//Go through the rows.
+			for( int k = 0; k < 9; k++ )
+			{//Go through and make sure each value is set to false.
+				values[k] = false;
+			}
+			for( int j = 1; j <= 9; j++ )
+			{//Go through the elements in the row.
+				if( !(at(j,i).isSet()) || (values[getElementValue(j,i)-1] == true) )
+				{//If this element isn't set or the value has already been seen, the puzzle isn't valid.
+					//std::cout << "Row " << i << " is invalid at column " << j << std::endl;
+					return false;
+				}
+				else
+				{//The value is ok, set it.
+					values[getElementValue(j,i)-1] = true;
+				}
+			}
+		}
+
+		//Go through each column.
+		for( int j = 1; j <= 9; j++ )
+		{//Go through the rows.
+			for( int k = 0; k < 9; k++ )
+			{//Go through and make sure each value is set to false.
+				values[k] = false;
+			}
+			for( int i = 1; i <= 9; i++ )
+			{//Go through the elements in the row.
+				if( !(at(j,i).isSet()) || (values[getElementValue(j,i)-1] == true) )
+				{//If this element isn't set or the value has already been seen, the puzzle isn't valid.
+					//std::cout << "Column " << j << " is invalid at row " << i << std::endl;
+					return false;
+				}
+				else
+				{//The value is ok, set it for later.
+					values[getElementValue(j,i)-1] = true;
+				}
+			}
+		}
+
+		//Go through each region.
+		for( int x = 0; x < 3; x++ )
+		{//Go through the rows of regions.
+			for( int y = 0; y < 3; y++ )
+			{//Go through the regions in the row.
+				for( int k = 0; k < 9; k++ )
+				{//Go through and make sure each value is set to false.
+					values[k] = false;
+				}
+				for( int i = 3*x+1; i <= 3*x+3; i++ )
+				{//Go through the rows in the region.
+					for( int j = 3*y+1; j <= 3*y+3; j++ )
+					{//Go through the elements in the row.
+						if( !(at(j,i).isSet()) || (values[getElementValue(j,i)-1] == true) )
+						{//If this element isn't set or the value has already been seen, the puzzle isn't valid.
+							//std::cout << "Grid " << x << "by" << y <<" is invalid at " << i << "by" << j << std::endl;
+							return false;
+						}
+						else
+						{//The value is ok, set it for later.
+							values[getElementValue(j,i)-1] = true;
+						}
+					}
+				}
+			}
+		}
+
+		return true;
 	}
 }

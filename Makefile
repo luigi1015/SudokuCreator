@@ -1,4 +1,4 @@
-all: SudokuElement.o SudokuGenerator.o SudokuPuzzle.o SudokuSolver
+all: SudokuElement.o SudokuGenerator.o SudokuPuzzle.o SudokuCreator
 
 SudokuElement.o: SudokuElement.cpp SudokuElement.h
 #	g++ -g -Wall -c SudokuElement.cpp SudokuElement.h
