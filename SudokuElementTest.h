@@ -1,3 +1,6 @@
+#ifndef SudokuElementTest_h
+#define SudokuElementTest_h
+
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include "SudokuElement.h"
@@ -66,6 +69,8 @@ class SudokuElementTest : public CppUnit::TestCase
 		CPPUNIT_TEST_EXCEPTION( testPossibleOutOfRangeUpper, std::out_of_range );
 		CPPUNIT_TEST_SUITE_END( );
 };
+
+#endif /* SudokuElementTest_h */
 
 
 			

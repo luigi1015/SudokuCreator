@@ -1,0 +1,3 @@
+[submodule "Random"]
+	path = Random
+	url = https://github.com/luigi1015/Random-Cpp.git

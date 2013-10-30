@@ -8,21 +8,29 @@
 //#include <sstream>
 #include <stack>
 #include <stdlib.h> 
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/io.hpp>
+//#include <boost/numeric/ublas/matrix.hpp>
+//#include <boost/numeric/ublas/io.hpp>
+#include "Random/random.cpp"
 
 namespace Sudoku
 {
-	void SudokuGenerator::generatePuzzles( std::string filename, int max )
-	{//Create all the puzzles it can and saves them to file filename.
+	void SudokuGenerator::generatePuzzles( std::string filename, long int max )
+	{//Create up to max number of puzzles and saves them to file filename.
 		SudokuPuzzle puzzle;
-		
-		puzzleGenerator( puzzle, 1, 1, filename);
+		int numPuzzles = 0;
+
+		while( numPuzzles < max )
+		{
+			if( puzzleGenerator( puzzle, 1, 1, filename, max) )
+			{//If generated a puzzle.
+				numPuzzles++;
+			}
+		}
 		//puzzleGeneratorNR( filename, max );
 	}
 	
-	void SudokuGenerator::puzzleGenerator( SudokuPuzzle puzzle, int x, int y, std::string &filename)
-	{//Recursively generates Sudoku puzzles. x and y are the coordinates for this call to modify. x and y should both be between 1 and 9 inclusive. filename is the file to hold the puzzles.
+	bool SudokuGenerator::puzzleGenerator( SudokuPuzzle puzzle, int x, int y, std::string &filename, long int max )
+	{//Recursively generates Sudoku puzzles. x and y are the coordinates for this call to modify. x and y should both be between 1 and 9 inclusive. filename is the file to hold the puzzles. max is the maximum number of valid values for an element to go through before stopping.
 /*
 		std::string errorText;
 		std::vector<int> possibleValues;
@@ -77,12 +85,15 @@ namespace Sudoku
 */
 		std::string errorText;
 		std::vector<int> possibleValues;
+		int numValsTried = 0;//Number of valid values tried for this element.
+		int numAttempts = 0;//Number of values attempted for this element.
+		bool worked = false;//Whether a valid Sudoku puzzle has been found.
 
 		//std::cout << "(" << x << "," << y << ")" << std::endl;
 
 		if( (x < 1) || (x > 9) )
 		{//x is out of bounds, throw error.
-			errorText = "In SudokuGenerator::puzzleGenerator( SudokuPuzzle &puzzle, int x, int y), x is out of bounds. x is ";
+			errorText = "In SudokuGenerator::puzzleGenerator( SudokuPuzzle puzzle, int x, int y, std::string &filename, int max ), x is out of bounds. x is ";
 			errorText += x;
 			errorText += " but should be between 1 and 9.\n";
 			std::cerr << errorText;
@@ -91,18 +102,39 @@ namespace Sudoku
 
 		if( (y < 1) || (y > 9) )
 		{//y is out of bounds, throw error.
-			errorText = "In SudokuGenerator::puzzleGenerator( SudokuPuzzle &puzzle, int x, int y), y is out of bounds. y is ";
+			errorText = "In SudokuGenerator::puzzleGenerator( SudokuPuzzle puzzle, int x, int y, std::string &filename, int max ), y is out of bounds. y is ";
 			errorText += y;
 			errorText += " but should be between 1 and 9.\n";
 			std::cerr << errorText;
 			throw std::out_of_range( errorText.c_str() );
 		}
 
-		for( unsigned int i = 1; i <= 9; i++ )
+		if( (max < 1) || (max > 9) )
+		{//max is out of bounds, throw error.
+			errorText = "In SudokuGenerator::puzzleGenerator( SudokuPuzzle puzzle, int x, int y, std::string &filename, int max ), max is out of bounds. max is ";
+			errorText += max;
+			errorText += " but should be between 1 and 9.\n";
+			std::cerr << errorText;
+			throw std::out_of_range( errorText.c_str() );
+		}
+
+		//for( unsigned int i = 1; i <= 9; i++ )
+		//for( unsigned int i = 1; (i <= 9) && (numValsTried < max); i++ )
+		//while( (numValsTried < max) && (numAttempts < 3*puzzle.at(x,y).getNumPossibilities()) )
+		//while( (numValsTried < max) && (numAttempts < 3*9) )
+		while( (numValsTried < 9) && (numAttempts < 3*9) && (worked == false) )
 		{//Go through each of the possible values and place them in the puzzle. Then go on to the next element, if there is one, using a recursive call.
+			int i = RNG::generateNumber<int>( 1, 9 );//Pick a random int between 1 and 9 inclusive.
+			
+			numAttempts++;
+			
+			//std::cout << "Generated random value " << i << " for element (" << x << ", " << y << ")." << std::endl;
 			//std::cout << "Setting value " << i << " at element (" << x << ", " << y << ")." << std::endl;
+			
 			if( puzzle.isPossibleValue(x,y,i) )
 			{
+				//std::cout << "Value works!" << std::endl << std::endl;
+				numValsTried++;
 				puzzle.setElementValue( x, y, i );
 
 				if( (x == 9) && (y == 9) )
@@ -113,23 +145,35 @@ namespace Sudoku
 					{//It's a valid puzzle, save it.
 						//std::cout << "Found valid puzzle!" << std::endl;
 						puzzle.saveToFile( filename );
+						return true;
+					}
+					else
+					{
+						return false;
 					}
 				}
 				else
 				{//Not the last element, go to the next element.
 					if( x == 9 )
 					{//Go to the next row since this is the last element of this row.
-						puzzleGenerator( puzzle, 1, y+1, filename);
+						//puzzleGenerator( puzzle, 1, y+1, filename, max);
+						worked = puzzleGenerator( puzzle, 1, y+1, filename, max);
 					}
 					else
 					{//Go to the element in this row.
-						puzzleGenerator( puzzle, x+1, y, filename);
+						worked = puzzleGenerator( puzzle, x+1, y, filename, max);
 					}
 				}
 
 				puzzle.removeElementValue( x, y );
 			}
+			else
+			{
+				//std::cout << "Value doesn't work. :(" << std::endl << std::endl;
+			}
 		}
+
+		return worked;//Return whether it worked or not.
 	}
 
 	void SudokuGenerator::puzzleGeneratorNR( std::string filename, int limit )
@@ -199,11 +243,11 @@ int main( int argc, char* argv[])
 	else
 	{//Start the sudokuGenerator.
 		Sudoku::SudokuGenerator gen;
-		int max = 100;
+		long int max = 2;
 		
 		if( argc == 3 )
 		{
-			max = atoi(argv[2]);
+			max = atol(argv[2]);
 		}
 		
 		gen.generatePuzzles( argv[1], max );
