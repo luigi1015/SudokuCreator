@@ -26,7 +26,7 @@ namespace Sudoku
 			if( puzzleGenerator( puzzle, 1, 1, filename, max) )
 			{//If generated a puzzle.
 				numPuzzles++;
-				std::cout << "Created pzzle number " << numPuzzles << "." << std::endl << std::endl;
+				std::cout << "Created puzzle number " << numPuzzles << "." << std::endl;
 			}
 		}
 		//puzzleGeneratorNR( filename, max );
