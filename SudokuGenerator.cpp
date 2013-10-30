@@ -91,6 +91,7 @@ namespace Sudoku
 		int numValsTried = 0;//Number of valid values tried for this element.
 		int numAttempts = 0;//Number of values attempted for this element.
 		bool worked = false;//Whether a valid Sudoku puzzle has been found.
+		std::vector<int> possibleValues;
 
 		//std::cout << "(" << x << "," << y << ")" << std::endl;
 
@@ -121,15 +122,20 @@ namespace Sudoku
 			throw std::out_of_range( errorText.c_str() );
 		}
 */
+		possibleValues = puzzle.getPossibleValues( x, y );
 
 		//for( unsigned int i = 1; i <= 9; i++ )
 		//for( unsigned int i = 1; (i <= 9) && (numValsTried < max); i++ )
 		//while( (numValsTried < max) && (numAttempts < 3*puzzle.at(x,y).getNumPossibilities()) )
 		//while( (numValsTried < max) && (numAttempts < 3*9) )
-		while( (numValsTried < 9) && (numAttempts < 3*9) && (worked == false) )
+		//while( (numValsTried < 9) && (numAttempts < 3*9) && (worked == false) )
+		while( (possibleValues.size() > 0) && (worked == false) )
 		{//Go through each of the possible values and place them in the puzzle. Then go on to the next element, if there is one, using a recursive call.
-			int i = RNG::generateNumber<int>( 1, 9 );//Pick a random int between 1 and 9 inclusive.
-			
+			//int i = RNG::generateNumber<int>( 1, 9 );//Pick a random int between 1 and 9 inclusive.
+			int j = RNG::generateNumber<int>( 0, possibleValues.size()-1);
+			int i = possibleValues.at(j);
+			possibleValues.erase( possibleValues.begin()+j-1 );
+
 			numAttempts++;
 			
 			//std::cout << "Generated random value " << i << " for element (" << x << ", " << y << ")." << std::endl;
