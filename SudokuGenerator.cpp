@@ -18,12 +18,15 @@ namespace Sudoku
 	{//Create up to max number of puzzles and saves them to file filename.
 		SudokuPuzzle puzzle;
 		int numPuzzles = 0;
+		
+		std::cout << "Creating " << max << " puzzles." << std::endl << std::endl;
 
 		while( numPuzzles < max )
 		{
 			if( puzzleGenerator( puzzle, 1, 1, filename, max) )
 			{//If generated a puzzle.
 				numPuzzles++;
+				std::cout << "Created pzzle number " << numPuzzles << "." << std::endl << std::endl;
 			}
 		}
 		//puzzleGeneratorNR( filename, max );
@@ -108,7 +111,7 @@ namespace Sudoku
 			std::cerr << errorText;
 			throw std::out_of_range( errorText.c_str() );
 		}
-
+/*
 		if( (max < 1) || (max > 9) )
 		{//max is out of bounds, throw error.
 			errorText = "In SudokuGenerator::puzzleGenerator( SudokuPuzzle puzzle, int x, int y, std::string &filename, int max ), max is out of bounds. max is ";
@@ -117,6 +120,7 @@ namespace Sudoku
 			std::cerr << errorText;
 			throw std::out_of_range( errorText.c_str() );
 		}
+*/
 
 		//for( unsigned int i = 1; i <= 9; i++ )
 		//for( unsigned int i = 1; (i <= 9) && (numValsTried < max); i++ )
