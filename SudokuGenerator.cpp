@@ -91,7 +91,7 @@ namespace Sudoku
 		int numValsTried = 0;//Number of valid values tried for this element.
 		int numAttempts = 0;//Number of values attempted for this element.
 		bool worked = false;//Whether a valid Sudoku puzzle has been found.
-		std::vector<int> possibleValues;
+		//std::vector<int> possibleValues;
 
 		//std::cout << "(" << x << "," << y << ")" << std::endl;
 
@@ -122,66 +122,101 @@ namespace Sudoku
 			throw std::out_of_range( errorText.c_str() );
 		}
 */
-		possibleValues = puzzle.getPossibleValues( x, y );
+		//possibleValues = puzzle.getPossibleValues( x, y );
+/*
+		for( int i = 1; i <= 9; i++ )
+		{
+			if( puzzle.isPossibleValue(x, y, i) )
+			{
+				possibleValues.push_back(i);
+			}
+		}
+*/
 
 		//for( unsigned int i = 1; i <= 9; i++ )
 		//for( unsigned int i = 1; (i <= 9) && (numValsTried < max); i++ )
 		//while( (numValsTried < max) && (numAttempts < 3*puzzle.at(x,y).getNumPossibilities()) )
 		//while( (numValsTried < max) && (numAttempts < 3*9) )
 		//while( (numValsTried < 9) && (numAttempts < 3*9) && (worked == false) )
-		while( (possibleValues.size() > 0) && (worked == false) )
-		{//Go through each of the possible values and place them in the puzzle. Then go on to the next element, if there is one, using a recursive call.
+		//std::cout << "test 1: possibleValues.size() = " << possibleValues.size() << std::endl;
+		//while( (possibleValues.size() > 0) && (worked == false) )
+		while( (worked == false) && (puzzle.getNumValues(x,y) > 0) && (numAttempts <= puzzle.getNumValues(x,y)) )
+		{//Randomly go through a possible value and place them in the puzzle. Then go on to the next element, if there is one, using a recursive call.
+			//int i, j;
+			int i;
 			//int i = RNG::generateNumber<int>( 1, 9 );//Pick a random int between 1 and 9 inclusive.
-			int j = RNG::generateNumber<int>( 0, possibleValues.size()-1);
-			int i = possibleValues.at(j);
-			possibleValues.erase( possibleValues.begin()+j-1 );
+			do
+			{
+/*
+				//std::cout << "test 2" << std::endl;
+				j = RNG::generateNumber<int>( 0, possibleValues.size()-1);
+				//std::cout << "test 3" << std::endl;
+				i = possibleValues.at(j);
+				//std::cout << "test 4" << std::endl;
+				possibleValues.erase( possibleValues.begin()+j-1 );
+				//std::cout << "test 5" << std::endl;
+*/
+				i = RNG::generateNumber<int>( 1, 9);
+			} while( !(puzzle.isPossibleValue(x,y,i)) );
 
 			numAttempts++;
 			
 			//std::cout << "Generated random value " << i << " for element (" << x << ", " << y << ")." << std::endl;
 			//std::cout << "Setting value " << i << " at element (" << x << ", " << y << ")." << std::endl;
 			
-			if( puzzle.isPossibleValue(x,y,i) )
-			{
+			//if( puzzle.isPossibleValue(x,y,i) )
+			//{
+				//std::cout << "test 6" << std::endl;
 				//std::cout << "Value works!" << std::endl << std::endl;
 				numValsTried++;
 				puzzle.setElementValue( x, y, i );
+				//std::cout << "test 7" << std::endl;
 
 				if( (x == 9) && (y == 9) )
 				{//This is the last element, save the puzzle.
 					//std::cout << puzzle << std::endl;
+					//std::cout << "test 8a" << std::endl;
 
 					if( puzzle.isValid() )
 					{//It's a valid puzzle, save it.
 						//std::cout << "Found valid puzzle!" << std::endl;
 						puzzle.saveToFile( filename );
+						//std::cout << "test 9a" << std::endl;
 						return true;
 					}
 					else
 					{
+						//std::cout << "test 9b" << std::endl;
 						return false;
 					}
 				}
 				else
 				{//Not the last element, go to the next element.
+					//std::cout << "test 8b" << std::endl;
 					if( x == 9 )
 					{//Go to the next row since this is the last element of this row.
 						//puzzleGenerator( puzzle, 1, y+1, filename, max);
+						//std::cout << "test 9c" << std::endl;
 						worked = puzzleGenerator( puzzle, 1, y+1, filename, max);
 					}
 					else
 					{//Go to the element in this row.
+						//std::cout << "test 9d" << std::endl;
 						worked = puzzleGenerator( puzzle, x+1, y, filename, max);
 					}
 				}
+				//std::cout << "test 10" << std::endl;
 
 				puzzle.removeElementValue( x, y );
+/*
 			}
 			else
 			{
 				//std::cout << "Value doesn't work. :(" << std::endl << std::endl;
 			}
+*/
 		}
+		//std::cout << "test 11" << std::endl;
 
 		return worked;//Return whether it worked or not.
 	}
